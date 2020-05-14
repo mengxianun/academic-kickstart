@@ -28,7 +28,7 @@ image:
 projects: []
 ---
 
-### 安装
+### 安装(CentOS)
 
 1 更新Yum
 
@@ -49,3 +49,8 @@ sudo systemctl start docker
 sudo systemctl enable docker
 ```
 
+
+
+参考：
+
+https://geekflare.com/docker-installation-guide/
