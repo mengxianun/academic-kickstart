@@ -28,8 +28,6 @@ image:
 projects: []
 ---
 
-helm 安装MySQL，使用本地存储的方式。
-
 本文介绍如何使用 helm 安装 MySQL，使用本地存储的方式。
 
 #### 1 创建StorageClass
