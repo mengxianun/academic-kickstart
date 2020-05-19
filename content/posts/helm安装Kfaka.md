@@ -249,3 +249,10 @@ mkdir -p /localdata/zookeeper/data-2
   ```
   helm install kafka-dev -f kafka-values.yaml incubator/kafka
   ```
+
+#### 5 查看Kafka版本
+
+```
+kubectl exec kafka-dev-0 -- ls /usr/share/java/kafka | grep kafka
+```
+
