@@ -1,4 +1,6 @@
 ---
+
+
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
 title: "Helm安装Kfaka"
@@ -30,15 +32,25 @@ projects: []
 
 本文介绍如何使用 helm 安装 Kafka，使用本地存储的方式。
 
-#### 1 创建StorageClass
+#### 1 配置 chart 仓库
+
+```
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+```
+
+#### 2 创建本地存储StorageClass
 
 ```
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: local-storage-kafka
+  name: local-storage
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+```
+
+```
+kubectl apply -f local-storage-class.yaml
 ```
 
 这里绑定模式选择 WaitForFirstConsumer
@@ -55,7 +67,9 @@ https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode
 
 https://kubernetes.io/docs/concepts/storage/volumes/#local
 
-#### 2 创建PersistentVolume
+#### 3 创建Kafka和Zookeeper的PersistentVolume
+
+- 创建Kafka的PV
 
 ```
 apiVersion: v1
@@ -68,7 +82,7 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage-kafka
+  storageClassName: local-storage
   local:
     path: /localdata/kafka/data-0
   nodeAffinity:
@@ -90,7 +104,7 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage-kafka
+  storageClassName: local-storage
   local:
     path: /localdata/kafka/data-1
   nodeAffinity:
@@ -112,7 +126,7 @@ spec:
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage-kafka
+  storageClassName: local-storage
   local:
     path: /localdata/kafka/data-2
   nodeAffinity:
@@ -125,16 +139,113 @@ spec:
           - node3
 ```
 
+```
+mkdir -p /localdata/kafka/data-0
+mkdir -p /localdata/kafka/data-1
+mkdir -p /localdata/kafka/data-2
+```
+
+- 创建Zookeeper的PV
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage-zookeeper-0
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /localdata/zookeeper/data-0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node3
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage-zookeeper-1
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /localdata/zookeeper/data-1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node3
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage-zookeeper-2
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /localdata/zookeeper/data-2
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node3
+```
+
+```
+mkdir -p /localdata/zookeeper/data-0
+mkdir -p /localdata/zookeeper/data-1
+mkdir -p /localdata/zookeeper/data-2
+```
+
+这里需要在节点上手动创建下存储目录 ，Kubernetes不会自动创建它。
+
 使用本地卷时需要 PersistentVolume nodeAffinity。 它使 Kubernetes 调度程序能够将使用本地卷的 Pods 正确调度到正确的节点。
 
-#### 3 在指定节点上创建存储目录
+#### 4 部署Kafka
 
-这里需要在节点 node3 上手动创建存储目录 /localdata/kafka/data-0,/localdata/kafka/data-1,/localdata/kafka/data-2，Kubernetes不会自动创建它。
+- 创建value文件kafka-values.yaml
 
-#### 4 安装
+  ```
+  external:
+    enabled: true
+  configurationOverrides:
+    "advertised.listeners": |-
+      EXTERNAL://192.168.1.1:$((31090 + ${KAFKA_BROKER_ID}))
+    "listener.security.protocol.map": |-
+      PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+  persistence:
+    storageClass: local-storage
+  
+  ```
 
-```
-helm install kafka-dev --set external.enabled=true --set persistence.storageClass=local-storage-kafka incubator/kafka
-```
+  这里开启外部访问，配置IP地址（第5行），集群任意节点均可，同时配置storageClass。其他更多配置看官方文档 https://github.com/helm/charts/tree/master/incubator/kafka
 
-这里设置 storageClassName 属性为上面创建的 StorageClass，并开启外部访问external.enabled，其他可设置属性参看官方说明 https://github.com/helm/charts/tree/master/incubator/kafka
+- 安装
+
+  ```
+  helm install kafka-dev -f kafka-values.yaml incubator/kafka
+  ```
