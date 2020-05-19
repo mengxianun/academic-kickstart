@@ -239,11 +239,10 @@ mkdir -p /localdata/zookeeper/data-2
       PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
   persistence:
     storageClass: local-storage
-  
   ```
-
-  这里开启外部访问，配置IP地址（第5行），集群任意节点均可，同时配置storageClass。其他更多配置看官方文档 https://github.com/helm/charts/tree/master/incubator/kafka
-
+  
+这里开启外部访问，配置IP地址（第5行），集群任意节点均可，同时配置storageClass。其他更多配置看官方文档 https://github.com/helm/charts/tree/master/incubator/kafka
+  
 - 安装
 
   ```
