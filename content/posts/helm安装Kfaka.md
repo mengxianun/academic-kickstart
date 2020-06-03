@@ -241,8 +241,9 @@ mkdir -p /localdata/zookeeper/data-2
     storageClass: local-storage
   ```
   
+
 这里开启外部访问，配置IP地址（第5行），集群任意节点均可，同时配置storageClass。其他更多配置看官方文档 https://github.com/helm/charts/tree/master/incubator/kafka
-  
+
 - 安装
 
   ```
@@ -255,3 +256,12 @@ mkdir -p /localdata/zookeeper/data-2
 kubectl exec kafka-dev-0 -- ls /usr/share/java/kafka | grep kafka
 ```
 
+
+
+#### 问题
+
+1. no persistent volumes available for this claim and no storage class is set
+
+   可能原因：
+
+   1. values.yaml 中的 persistence.size 属性大于 PV 中 storage 大小
