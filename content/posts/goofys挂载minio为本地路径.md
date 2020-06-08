@@ -57,9 +57,9 @@ aws_secret_access_key = MY-SECRET-KEY
 $ $GOPATH/bin/goofys <bucket> <mountpoint>
 $ $GOPATH/bin/goofys <bucket:prefix> <mountpoint>
 # 例
-goofys --endpoint http://localhost:9000 testbucket /mnt
+goofys --endpoint http://localhost:9000 bucket /mnt
 # 前端运行
-goofys -f --endpoint http://localhost:9000 testbucket /mnt
+goofys -f --endpoint http://localhost:9000 bucket /mnt
 ```
 
 #### 5 开机自动挂载
