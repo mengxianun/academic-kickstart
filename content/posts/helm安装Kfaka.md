@@ -265,3 +265,6 @@ kubectl exec kafka-dev-0 -- ls /usr/share/java/kafka | grep kafka
    可能原因：
 
    1. values.yaml 中的 persistence.size 属性大于 PV 中 storage 大小
+
+   **在PVC绑定PV时通常根据两个条件来绑定，一个是存储的大小，另一个就是访问模式。**
+
