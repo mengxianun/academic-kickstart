@@ -123,15 +123,79 @@ docker pull quay.io/coreos/flannel:v0.12.0-amd64
 3. 安装docker
 
    ```
-   
+   curl -fsSL https://get.docker.com/ | sh
+   sudo systemctl start docker
+   sudo systemctl enable docker
    ```
 
 4. 设置必需的sysctl参数
 
+   ```
+   sysctl net.bridge.bridge-nf-call-iptables=1
+   ```
+
 5. 禁用swap
 
-6. 安装kubernetes程序包
+   ```
+   sudo swapoff -a
+   sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+   ```
+
+6. 安装kubernetes程序包(rpm)
+
+   ```
+   cri-tools
+   kubeadm
+   kubectl
+   kubelet
+   kubernetes-cni
+   ```
 
 7. 开启kubelet
 
+   ```
+   systemctl enable kubelet && systemctl start kubelet
+   ```
+
 8. 加载kubernetes镜像
+
+   ```
+   # 加载单个镜像
+   docker load < **.tar
+   # 一次加载目录下所有镜像
+   for i in `ls`; do docker load < $i; done
+   ```
+
+#### 部署
+
+##### 主节点
+
+1. 初始化
+
+   ```
+   # flannel
+   kubeadm init --pod-network-cidr=10.244.0.0/16
+   ```
+
+2. 设置网络
+
+   ```
+   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+   ```
+
+##### 从节点
+
+1. 加入集群
+
+   ```
+   # 此命令从主节点init命令输出获得
+   kubeadm join 192.168.201.120:6443 --token z8clj6.i8u6s0deqsncftaz --discovery-token-ca-cert-hash sha256:a0cf54fda227bb64d6af37479ed055aad31e55df287566d3793825705355f3d8
+   ```
+
+##### 检查状态(Ready)
+
+```
+# 主节点执行
+kubectl get nodes
+```
+
