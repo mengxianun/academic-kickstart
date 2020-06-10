@@ -30,6 +30,8 @@ projects: []
 
 kubeadm 安装 kubernets 集群
 
+
+
 #### 下载程序包(翻墙)
 
 ```
@@ -90,11 +92,39 @@ docker pull quay.io/coreos/flannel:v0.12.0-amd64
    systemctl restart firewalld
    ```
 
-   
-
 2. 设置hostname
 
+   ```
+   # 节点1
+   # 设置hostname
+   sudo hostnamectl set-hostname node1
+   # 修改/etc/hosts, 添加以下信息
+   192.168.201.120 node1
+   192.168.201.121 node2
+   192.168.201.122 node3
+   
+   # 节点2
+   # 设置hostname
+   sudo hostnamectl set-hostname node2
+   # 修改/etc/hosts, 添加以下信息
+   192.168.201.120 node1
+   192.168.201.121 node2
+   192.168.201.122 node3
+   
+   # 节点3
+   # 设置hostname
+   sudo hostnamectl set-hostname node3
+   # 修改/etc/hosts, 添加以下信息
+   192.168.201.120 node1
+   192.168.201.121 node2
+   192.168.201.122 node3
+   ```
+
 3. 安装docker
+
+   ```
+   
+   ```
 
 4. 设置必需的sysctl参数
 
