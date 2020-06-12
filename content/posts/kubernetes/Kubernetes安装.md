@@ -32,18 +32,6 @@ kubeadm 安装 kubernets 集群
 
 
 
-#### 下载程序包(翻墙)
-
-```
-# 下载程序
-yum install -y --downloadonly kubelet kubeadm kubectl --disableexcludes=kubernetes
-# 下载镜像
-kubeadm config images pull
-docker pull quay.io/coreos/flannel:v0.12.0-amd64
-```
-
-注：下载的程序为最新版本
-
 #### 准备工作
 
 1. 开启防火墙端口
@@ -123,9 +111,17 @@ docker pull quay.io/coreos/flannel:v0.12.0-amd64
 3. 安装docker
 
    ```
-   curl -fsSL https://get.docker.com/ | sh
-   sudo systemctl start docker
-   sudo systemctl enable docker
+   # 安装docker仓库
+   yum install -y yum-utils
+   yum-config-manager \
+       --add-repo \
+       https://download.docker.com/linux/centos/docker-ce.repo
+   # 安装docker 19.03 版本
+   yum install -y docker-ce-19.03.11 docker-ce-cli-19.03.11 containerd.io
+   # 安装最新版本
+   #yum install -y docker-ce docker-ce-cli containerd.io
+   # 启动docker
+   systemctl enable docker && systemctl start docker
    ```
 
 4. 设置必需的sysctl参数
@@ -141,30 +137,58 @@ docker pull quay.io/coreos/flannel:v0.12.0-amd64
    sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
    ```
 
-6. 安装kubernetes程序包(rpm)
+#### Kubernetes 程序安装
 
-   ```
-   cri-tools
-   kubeadm
-   kubectl
-   kubelet
-   kubernetes-cni
-   ```
+##### 在线安装方式
 
-7. 开启kubelet
+###### kubelet/kubeadm/kubectl
 
-   ```
-   systemctl enable kubelet && systemctl start kubelet
-   ```
+```
+yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+# 开启kubelet
+systemctl enable kubelet && systemctl start kubelet
+```
 
-8. 加载kubernetes镜像
+###### 镜像
 
-   ```
-   # 加载单个镜像
-   docker load < **.tar
-   # 一次加载目录下所有镜像
-   for i in `ls`; do docker load < $i; done
-   ```
+```
+# 预先拉去镜像
+kubeadm config images pull
+```
+
+##### 离线安装方式
+
+###### 下载程序包(翻墙)
+
+```
+# 下载程序
+yum install -y --downloadonly kubelet kubeadm kubectl --disableexcludes=kubernetes
+# 下载镜像
+kubeadm config images pull
+docker pull quay.io/coreos/flannel:v0.12.0-amd64
+# 将镜像保存为tar文件
+docker save ...
+```
+
+###### kubelet/kubeadm/kubectl
+
+```
+# 将程序包拷贝到服务器上
+# 进入rpm文件路径
+yum -y install *.rpm
+# 开启kubelet
+systemctl enable kubelet && systemctl start kubelet
+```
+
+###### 镜像
+
+```
+# 将kubernetes相关镜像拷贝到服务器上
+# 进入镜像文件目录, 加载所有镜像
+for i in `ls`; do docker load < $i; done
+```
+
+离线文件下载地址(1.18版本)
 
 #### 部署
 
@@ -177,7 +201,26 @@ docker pull quay.io/coreos/flannel:v0.12.0-amd64
    kubeadm init --pod-network-cidr=10.244.0.0/16
    ```
 
-2. 设置网络
+2. 配置环境变量
+
+   - root
+
+     ```
+     # /etc/profile 添加以下内容
+     export KUBECONFIG=/etc/kubernetes/admin.conf
+     # 立即生效
+     source /etc/profile
+     ```
+
+   - 常规用户
+
+     ```
+     mkdir -p $HOME/.kube
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
+     ```
+
+3. 设置网络
 
    ```
    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -197,5 +240,15 @@ docker pull quay.io/coreos/flannel:v0.12.0-amd64
 ```
 # 主节点执行
 kubectl get nodes
+# 输出如下
+NAME    STATUS     ROLES    AGE   VERSION
+node1   Ready      master   21m   v1.18.3
+node2   NotReady   <none>   37s   v1.18.3
+node3   NotReady   <none>   36s   v1.18.3
+# 等待一会, 全部Ready
+NAME    STATUS   ROLES    AGE     VERSION
+node1   Ready    master   22m     v1.18.3
+node2   Ready    <none>   2m25s   v1.18.3
+node3   Ready    <none>   2m24s   v1.18.3
 ```
 
