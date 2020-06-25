@@ -84,7 +84,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /localdata/kafka/data-0
+    path: /localstorage/kafka/data-0
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -106,7 +106,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /localdata/kafka/data-1
+    path: /localstorage/kafka/data-1
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -128,7 +128,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /localdata/kafka/data-2
+    path: /localstorage/kafka/data-2
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -140,9 +140,9 @@ spec:
 ```
 
 ```
-mkdir -p /localdata/kafka/data-0
-mkdir -p /localdata/kafka/data-1
-mkdir -p /localdata/kafka/data-2
+mkdir -p /localstorage/kafka/data-0
+mkdir -p /localstorage/kafka/data-1
+mkdir -p /localstorage/kafka/data-2
 ```
 
 - 创建Zookeeper的PV
@@ -160,7 +160,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /localdata/zookeeper/data-0
+    path: /localstorage/zookeeper/data-0
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -182,7 +182,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /localdata/zookeeper/data-1
+    path: /localstorage/zookeeper/data-1
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -204,7 +204,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /localdata/zookeeper/data-2
+    path: /localstorage/zookeeper/data-2
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -216,9 +216,9 @@ spec:
 ```
 
 ```
-mkdir -p /localdata/zookeeper/data-0
-mkdir -p /localdata/zookeeper/data-1
-mkdir -p /localdata/zookeeper/data-2
+mkdir -p /localstorage/zookeeper/data-0
+mkdir -p /localstorage/zookeeper/data-1
+mkdir -p /localstorage/zookeeper/data-2
 ```
 
 这里需要在节点上手动创建下存储目录 ，Kubernetes不会自动创建它。
@@ -267,4 +267,14 @@ kubectl exec kafka-dev-0 -- ls /usr/share/java/kafka | grep kafka
    1. values.yaml 中的 persistence.size 属性大于 PV 中 storage 大小
 
    **在PVC绑定PV时通常根据两个条件来绑定，一个是存储的大小，另一个就是访问模式。**
+   
+2. zookeeper Cannot open channel to 1 at election
+
+   可能原因：
+
+   1. 启动zookeeper的时候，上一次启动的数据没有删除（挂载PV目录）
+
+3. 
+
+   
 
