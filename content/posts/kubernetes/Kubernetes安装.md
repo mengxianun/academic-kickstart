@@ -254,6 +254,18 @@ node3   Ready    <none>   2m24s   v1.18.3
 
 
 
+#### 维护
+
+1. 删除Evicted状态Pod
+
+   ```
+   kubectl get pods | grep Evicted | awk '{print $1}' | xargs kubectl delete pod
+   # 指定命名空间
+   kubectl get pods -n ns | grep Evicted | awk '{print $1}' | xargs kubectl delete pod -n ns
+   ```
+
+2. 
+
 #### 问题
 
 1. kubernetes 没有启动，手动启动api-server docker容器后出现错误消息：Error response from daemon: cannot join network of a non running container: 56de51eee0b8e0a327c927889e198b84f65cccd8645a092823350c7c10e530af
