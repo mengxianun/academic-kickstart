@@ -30,6 +30,12 @@ projects: []
 
 Linux - CentOS
 
+#### 查看系统版本
+
+```
+cat /etc/redhat-release
+```
+
 #### hostname
 
 1. 设置 hostname
