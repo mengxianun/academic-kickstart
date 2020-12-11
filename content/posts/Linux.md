@@ -410,4 +410,10 @@ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
    sed -i 's/enforcing/disabled/g' /etc/selinux/config /etc/selinux/config
    ```
 
-   
+
+#### 监控文件夹
+
+```
+watch -n 0.1 ls <your_folder>
+```
+

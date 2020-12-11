@@ -54,3 +54,24 @@ sudo systemctl enable docker
 参考：
 
 https://geekflare.com/docker-installation-guide/
+
+
+
+#### 删除所有none镜像
+
+```
+docker rmi $(docker images | awk '/^<none>/ { print $3 }')
+```
+
+
+
+### Dockerfile
+
+#### 时区
+
+```
+FROM alpine:3.6
+RUN apk add --no-cache tzdata
+ENV TZ Asia/Shanghai
+```
+

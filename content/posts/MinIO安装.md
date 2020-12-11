@@ -228,3 +228,63 @@ minio server http://host1/export1 http://host1/export2 http://host2/export1 http
    systemctl enable minio
    ```
 
+#### 客户端
+
+##### 安装
+
+```
+wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
+chmod +x /usr/local/bin/mc
+```
+
+##### 常用命令
+
+| 命令 | 说明                     |
+| ---- | ------------------------ |
+| ls   | list buckets and objects |
+|      |                          |
+|      |                          |
+
+#### 挂载minio为本地路径
+
+1. 安装goofys
+
+   ```
+   yum install -y fuse
+   wget https://github.com/kahing/goofys/releases/latest/download/goofys -P /usr/local/bin/
+   chmod +x /usr/local/bin/goofys
+   ```
+
+2. 配置认证信息
+
+   ```
+   $ mkdir ~/.aws
+   $ cat <<EOT > ~/.aws/credentials
+   [default]
+   aws_access_key_id=Server-Access-Key
+   aws_secret_access_key=Server-Secret-Key
+   EOT
+   ```
+
+3. 挂载
+
+   ```
+   goofys <bucket> <mountpoint>
+   goofys <bucket:prefix> <mountpoint> # if you only want to mount objects under a prefix
+   
+   # 示例
+   goofys --endpoint http://10.111.54.230:9000 test /minio-local-data
+   ```
+
+4. 开机自动挂载
+
+   ```
+   # 修改 /etc/fstab, 添加如下内容
+   goofys#bucket /mnt/mountpoint fuse _netdev,allow_other,--file-mode=0666,--dir-mode=0777 0 0
+   ```
+
+##### 卸载
+
+```
+fusermount -u /path/to/mountpoint
+```
