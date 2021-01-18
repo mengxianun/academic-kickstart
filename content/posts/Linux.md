@@ -338,6 +338,16 @@ bash -x *.sh
    nofile     是代表最大文件打开数
    ```
 
+
+4. 简化
+
+   ```
+   echo "*   soft    nofile  65535" >> /etc/security/limits.conf
+   echo "*   hard    nofile  65535" >> /etc/security/limits.conf
+   echo "*   soft    nproc  65535" >> /etc/security/limits.conf
+   echo "*   hard    nproc  65535" >> /etc/security/limits.conf
+   ```
+
 #### vm.max_map_count
 
 1. 查看
@@ -367,9 +377,9 @@ bash -x *.sh
 #### 后台守护进程
 
 ```
-setsid myscript.sh >/dev/null 2>&1 < /dev/null &
+setsid myscript.sh >/dev/null 2>&1 &
 # 输出到日志文件
-setsid myscript.sh >/path/to/logfile 2>&1 < /dev/null &
+setsid myscript.sh >/path/to/logfile 2>&1 &
 ```
 
 #### swap
@@ -415,5 +425,18 @@ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 ```
 watch -n 0.1 ls <your_folder>
+```
+
+#### 查看CPU个数
+
+```
+## 方法1
+grep -c ^processor /proc/cpuinfo
+## 方法2
+nproc
+## 方法3
+getconf _NPROCESSORS_ONLN
+## 方法4
+lscpu | grep 'CPU(s):' | head -1 | awk '{print $2}'
 ```
 

@@ -28,34 +28,40 @@ image:
 projects: []
 ---
 
-### 安装(CentOS)
+### Docker(CentOS)
 
-1 更新Yum
+#### 安装(开发环境)
 
 ```
+## 1 更新Yum
 sudo yum update
-```
-
-2 添加docker仓库并安装docker
-
-```
+## 2 添加docker仓库并安装docker
 curl -fsSL https://get.docker.com/ | sh
-```
-
-3 启动docker
-
-```
+## 3 启动docker
 sudo systemctl start docker
 sudo systemctl enable docker
 ```
-
-
 
 参考：
 
 https://geekflare.com/docker-installation-guide/
 
+#### 修改存储位置
 
+```
+## 1 创建文件 /etc/docker/daemon.json, 内容如下
+{
+  "data-root": "/mnt/newlocation"
+}
+## 2 重启docker
+sudo systemctl restart docker
+```
+
+#### 删除冗余数据
+
+```
+docker system prune -a
+```
 
 #### 删除所有none镜像
 
@@ -75,3 +81,17 @@ RUN apk add --no-cache tzdata
 ENV TZ Asia/Shanghai
 ```
 
+#### examples
+
+##### Spring Boot
+
+```
+FROM openjdk:8-jre-alpine
+RUN apk add --no-cache tzdata
+ENV TZ Asia/Shanghai
+WORKDIR /app
+COPY springboot.jar /app
+ENTRYPOINT ["java", "-jar", "springboot.jar"]
+```
+
+### Docker Compose

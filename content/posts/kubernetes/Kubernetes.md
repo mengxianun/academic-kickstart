@@ -28,9 +28,9 @@ image:
 projects: []
 ---
 
-kubeadm 安装 kubernets 集群
+kubernets
 
-
+### 安装
 
 #### 准备工作
 
@@ -252,7 +252,60 @@ node2   Ready    <none>   2m25s   v1.18.3
 node3   Ready    <none>   2m24s   v1.18.3
 ```
 
+#### Dashboard
 
+##### 外部访问
+
+1. Dashboard 服务类型 由 **ClusterIP** 改为 **NodePort**
+
+   ```
+   kubectl -n kube-system edit service kubernetes-dashboard
+   ```
+
+2. 创建 Admin Service Account
+
+   ```
+   apiVersion: v1
+   kind: ServiceAccount
+   metadata:
+     name: admin-user
+     namespace: kube-system
+   ```
+
+   ```
+   $ kubectl apply -f dashboard-adminuser.yml
+   serviceaccount/admin-user created
+   ```
+
+3. 创建 ClusterRoleBinding
+
+   ```
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: ClusterRoleBinding
+   metadata:
+     name: admin-user
+   roleRef:
+     apiGroup: rbac.authorization.k8s.io
+     kind: ClusterRole
+     name: cluster-admin
+   subjects:
+   - kind: ServiceAccount
+     name: admin-user
+     namespace: kube-system
+   ```
+
+   ```
+   $ kubectl apply -f admin-role-binding.yml
+   clusterrolebinding.rbac.authorization.k8s.io/admin-user created
+   ```
+
+4. 获取 Token
+
+   ```
+   kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+   ```
+
+5. sign in
 
 #### 维护
 
