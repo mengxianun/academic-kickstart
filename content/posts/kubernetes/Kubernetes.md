@@ -1,7 +1,7 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "Kubernetes安装"
+title: "Kubernetes"
 subtitle: ""
 summary: ""
 authors: []
