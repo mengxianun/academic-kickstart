@@ -305,7 +305,7 @@ node3   Ready    <none>   2m24s   v1.18.3
    kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
    ```
 
-5. sign in
+5. 登录
 
 
 
