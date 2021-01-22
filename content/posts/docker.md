@@ -46,6 +46,12 @@ sudo systemctl enable docker
 
 https://geekflare.com/docker-installation-guide/
 
+#### 卸载
+
+```
+sudo yum remove -y docker-ce docker-ce-cli
+```
+
 #### 修改存储位置
 
 ```
@@ -67,6 +73,12 @@ docker system prune -a
 
 ```
 docker rmi $(docker images | awk '/^<none>/ { print $3 }')
+```
+
+#### 删除所有容器
+
+```
+docker stop $(docker ps -q) & docker rm $(docker ps -aq)
 ```
 
 
