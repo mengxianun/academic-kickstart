@@ -440,3 +440,10 @@ getconf _NPROCESSORS_ONLN
 lscpu | grep 'CPU(s):' | head -1 | awk '{print $2}'
 ```
 
+#### 代理上网
+
+```
+## /etc/profile
+export http_proxy="http://proxy_username:proxy_password@proxy_ip:proxy_port"
+```
+
