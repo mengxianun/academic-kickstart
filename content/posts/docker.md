@@ -95,3 +95,25 @@ ENTRYPOINT ["java", "-jar", "springboot.jar"]
 ```
 
 ### Docker Compose
+
+#### MySQL
+
+```
+version: '3.3'
+services:
+
+  db:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 1qazXSW@
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
+```
+
