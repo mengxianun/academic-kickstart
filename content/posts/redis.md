@@ -1,7 +1,7 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "Redis安装"
+title: "Redis"
 subtitle: ""
 summary: ""
 authors: []
