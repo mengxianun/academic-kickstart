@@ -447,6 +447,7 @@ lscpu | grep 'CPU(s):' | head -1 | awk '{print $2}'
 export http_proxy="http://proxy_username:proxy_password@proxy_ip:proxy_port"
 ```
 
+<<<<<<< HEAD
 #### 目录结构查看
 
 ```
@@ -454,5 +455,12 @@ export http_proxy="http://proxy_username:proxy_password@proxy_ip:proxy_port"
 ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
 ## 文件
 find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+=======
+#### 查看PID进程详情
+
+```
+1. cat /proc/PID/cmdline | tr '\000' ' '
+2. cat /proc/PID/cmdline | xargs -0 echo
+>>>>>>> a7ccb4a03d0b7eceeed9fc13f3c0ac57061f88ad
 ```
 
