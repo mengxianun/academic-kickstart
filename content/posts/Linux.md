@@ -447,3 +447,12 @@ lscpu | grep 'CPU(s):' | head -1 | awk '{print $2}'
 export http_proxy="http://proxy_username:proxy_password@proxy_ip:proxy_port"
 ```
 
+#### 目录结构查看
+
+```
+## 目录
+ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
+## 文件
+find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
+```
+

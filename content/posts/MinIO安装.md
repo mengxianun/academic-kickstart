@@ -58,6 +58,9 @@ minio server /data
 minio server /data{1...4}
 or
 minio server /data1 /data2 /data3 /data4
+
+# 后台运行
+setsid minio server /home/minio/data >/home/minio/data/minio.log 2>&1 < /dev/null &
 ```
 
 ##### 多节点多磁盘
@@ -288,3 +291,11 @@ chmod +x /usr/local/bin/mc
 ```
 fusermount -u /path/to/mountpoint
 ```
+
+#### 定时删除文件
+
+```
+## 每天2点，删除30天前的文件
+0 2 * * * /root/minio-binaries/mc rm --recursive --dangerous --force --older-than 30d local
+```
+
