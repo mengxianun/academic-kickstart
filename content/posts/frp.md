@@ -1,14 +1,14 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "SpringBoot整合elasticsearch和redis的问题"
+title: "Frp"
 subtitle: ""
 summary: ""
 authors: []
 tags: []
 categories: []
-date: 2020-05-22T12:38:34+08:00
-lastmod: 2020-05-22T12:38:34+08:00
+date: 2022-04-24T10:02:10+08:00
+lastmod: 2022-04-24T10:02:10+08:00
 featured: false
 draft: false
 
@@ -28,6 +28,38 @@ image:
 projects: []
 ---
 
-问题描述：availableProcessors is already set to [8], rejecting [8]
+### 服务端配置
 
-解决：https://blog.csdn.net/busishenren/article/details/90478928
+/etc/frp/frps.ini
+
+```
+[common]
+bind_port = 7000
+token = ***
+```
+
+### 客户端配置
+
+/etc/frp/frpc.ini
+
+```
+[common]
+server_addr = 服务端IP(公网)
+server_port = 7000
+token = ***
+
+[gitlab]
+type = tcp
+local_ip = 内网服务IP
+local_port = 内网服务端口
+remote_port = 公网服务端口
+```
+
+### 管理
+
+#### 重启
+
+```
+systemctl restart frpc.service
+```
+
